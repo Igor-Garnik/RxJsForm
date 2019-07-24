@@ -46,7 +46,7 @@ export class RxJsFormComponent implements AfterViewInit {
                     mergeMap((confirmPas: string) => {
                       return fromEvent(this.submitBtn.nativeElement, 'click')
                         .pipe(
-                          map((event: Event) => this.formattingMessage(email, password, confirmPas))
+                          map(() => this.formattingMessage(email, password, confirmPas))
                         );
                     })
                   );
