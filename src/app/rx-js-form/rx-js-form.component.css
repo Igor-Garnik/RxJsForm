@@ -1,0 +1,21 @@
+.header {
+  margin: 5% auto;
+  text-align: center;
+  font-size: 20px;
+}
+
+.form {
+  margin: 0 auto;
+  min-width: 250px;
+  max-width: 300px;
+  width: 100%;
+}
+
+.btn, mat-form-field{
+  width: 100%;
+}
+
+.error-block {
+  text-align: center;
+  color: red;
+}

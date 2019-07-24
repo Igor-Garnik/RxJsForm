@@ -1,0 +1,26 @@
+<h1 class="header">RxJs Form</h1>
+<form class="form">
+
+  <mat-form-field>
+    <label for="email">Email</label>
+    <input matInput type="email" id="email" #email>
+  </mat-form-field>
+
+
+  <mat-form-field>
+    <label for="password">Password</label>
+    <input matInput type="password" id="password" #password>
+  </mat-form-field>
+
+  <mat-form-field>
+    <label for="confirm-password">Confirm password</label>
+    <input matInput type="password" id="confirm-password" #confirmPas>
+  </mat-form-field>
+
+  <p class="error-block" #error></p>
+
+  <div #btn>
+    <button type="button" class="btn" mat-raised-button color="primary" [disabled]="isDisabled" >Submit</button>
+  </div>
+
+</form>
