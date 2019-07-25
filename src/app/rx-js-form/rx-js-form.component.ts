@@ -26,65 +26,41 @@ export class RxJsFormComponent implements AfterViewInit {
 
   constructor() {}
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     fromEvent(this.email.nativeElement, 'blur')
       .pipe(
         pluck('target', 'value'),
-        map((email: string) => this.checkEmail(email)),
+        map((email: string) => {
+          return this.checkEmail(email);
+        }),
         mergeMap((email: string) => {
           return fromEvent(this.password.nativeElement, 'blur')
             .pipe(
               pluck('target', 'value'),
-              map((password: string) => this.checkPassword(password)),
-              concatMap((password: string) => {
-                return fromEvent(this.confirmPas.nativeElement, 'keyup')
+              map((password: string) => {
+                return this.checkPassword(password);
+              }),
+              mergeMap((password: string) => {
+                return fromEvent(this.confirmPas.nativeElement, 'blur')
                   .pipe(
                     pluck('target', 'value'),
-                    debounceTime(1000),
-                    distinctUntilChanged(),
-                    map((confirmPas: string) => this.matchPassword(password, confirmPas)),
-                    concatMap((confirmPas: string) => {
+                    map((confirmPas: string) => {
+                      return this.matchPassword(password, confirmPas);
+                    }),
+                    mergeMap((confirmPas: string) => {
                       return fromEvent(this.submitBtn.nativeElement, 'click')
                         .pipe(
-                          map(() => this.formattingMessage(email, password, confirmPas)),
+                          map(() => this.formattingMessage(email, password, confirmPas))
                         );
                     })
                   );
               })
             );
         })
-      ).subscribe(res => {
-      if (!res.includes('undefined')) {
-        alert(res);
-      }
-    });
-  }
-
-  private checkEmail(email: string): string | void {
-    if (email && emailRegExp.test(email)) {
-      this.errorBlock.nativeElement.innerHTML = '';
-      return email;
-    } else {
-      this.showMessage(errors.email);
-    }
-  }
-
-  private checkPassword(password: string): string | void {
-    if (password && password.length > 4) {
-      this.errorBlock.nativeElement.innerHTML = '';
-      return password;
-    } else {
-      this.showMessage(errors.password);
-    }
-  }
-
-  private matchPassword(password: string, confirmPas: string): string | void {
-    if (password === confirmPas) {
-      this.errorBlock.nativeElement.innerHTML = '';
-      this.isDisabled = false;
-      return confirmPas;
-    }
-    if (password) this.showMessage(errors.confirm);
+      ).subscribe(
+      result => alert(result),
+      error => this.errorBlock.nativeElement.innerHTML = error
+    );
   }
 
   private formattingMessage(email: string, password: string, confirmPas: string): string {
@@ -95,8 +71,31 @@ export class RxJsFormComponent implements AfterViewInit {
     `;
   }
 
-  private showMessage(message: string): void {
-    this.errorBlock.nativeElement.innerHTML = message;
+  private checkEmail(email: string) {
+    if (email && emailRegExp.test(email)) {
+      return email;
+    } else {
+      throw new Error (errors.email);
+    }
+  }
+
+  private checkPassword(password: string): string | void {
+    if (password && password.length > 4) {
+      this.errorBlock.nativeElement.innerHTML = '';
+      return password;
+    } else {
+      throw new Error (errors.password);
+    }
+  }
+
+  private matchPassword(password: string, confirmPas: string): string | void {
+    if (password === confirmPas) {
+      this.errorBlock.nativeElement.innerHTML = '';
+      this.isDisabled = false;
+      return confirmPas;
+    } else {
+      throw new Error (errors.confirm);
+    }
   }
 
 }
