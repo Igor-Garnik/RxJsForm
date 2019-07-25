@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {fromEvent} from 'rxjs';
-import {debounceTime, distinctUntilChanged, map, mergeMap, pluck} from 'rxjs/operators';
+import {concatMap, debounceTime, distinctUntilChanged, map, mergeMap, pluck} from 'rxjs/operators';
 
 const emailRegExp = /(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,6})/;
 const errors = {
@@ -36,17 +36,17 @@ export class RxJsFormComponent implements AfterViewInit {
             .pipe(
               pluck('target', 'value'),
               map((password: string) => this.checkPassword(password)),
-              mergeMap((password: string) => {
+              concatMap((password: string) => {
                 return fromEvent(this.confirmPas.nativeElement, 'keyup')
                   .pipe(
                     pluck('target', 'value'),
                     debounceTime(1000),
                     distinctUntilChanged(),
                     map((confirmPas: string) => this.matchPassword(password, confirmPas)),
-                    mergeMap((confirmPas: string) => {
+                    concatMap((confirmPas: string) => {
                       return fromEvent(this.submitBtn.nativeElement, 'click')
                         .pipe(
-                          map(() => this.formattingMessage(email, password, confirmPas))
+                          map(() => this.formattingMessage(email, password, confirmPas)),
                         );
                     })
                   );
